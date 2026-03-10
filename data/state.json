@@ -1,0 +1,16 @@
+{
+  "threads_example_1": {
+    "last_checked_at": "2026-03-10T09:25:38.646006Z",
+    "last_success_at": null,
+    "last_error_at": "2026-03-10T09:25:40.276860Z",
+    "last_error_message": "Could not extract posts from Threads profile: https://www.threads.net/@example_account. Threads page structure may have changed.",
+    "notified_posts": []
+  },
+  "test_source": {
+    "last_checked_at": "2026-03-10T09:27:24.631332Z",
+    "last_success_at": null,
+    "last_error_at": "2026-03-10T09:27:26.748110Z",
+    "last_error_message": "Could not extract posts from Threads profile: https://www.threads.com/@make_investment_easy. Threads page structure may have changed.",
+    "notified_posts": []
+  }
+}

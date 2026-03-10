@@ -1,0 +1,11 @@
+[
+  {
+    "id": "test_source",
+    "platform": "threads",
+    "name": "目標 Threads 帳號 A",
+    "url": "https://www.threads.com/@make_investment_easy",
+    "enabled": true,
+    "check_interval_minutes": 60,
+    "parser_type": "threads_public_profile"
+  }
+]
