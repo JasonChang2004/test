@@ -9,11 +9,11 @@
     "parser_type": "threads_public_profile"
   },
   {
-    "id": "test_2",
+    "id": "stock_glee",
     "platform": "threads",
-    "name": "帳號 2 的顯示名稱",
+    "name": "test2",
     "url": "https://www.threads.com/@stock_glee",
-    "enabled": false,
+    "enabled": true,
     "check_interval_minutes": 60,
     "parser_type": "threads_public_profile"
   }
