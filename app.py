@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
+from zoneinfo import ZoneInfo
 
 import requests
 from bs4 import BeautifulSoup
@@ -18,6 +19,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 load_dotenv()
 
 UTC = timezone.utc
+TAIPEI_TZ = ZoneInfo("Asia/Taipei")
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_DIR = BASE_DIR / "config"
 DATA_DIR = BASE_DIR / "data"
@@ -63,6 +65,7 @@ class Post:
     text: str
     published_at: Optional[str]
     source_name: str
+    image_url: Optional[str] = None
 
     @property
     def dedupe_key(self) -> str:
@@ -221,9 +224,10 @@ class ThreadsFetcher:
         post_urls = self._extract_post_urls(html)
         text_candidates = self._extract_text_candidates(html)
         time_candidates = self._extract_time_candidates(html)
+        image_candidates = self._extract_image_candidates(html)
 
-        logger.info("Extracted data | post_urls=%d | texts=%d | times=%d", 
-                   len(post_urls), len(text_candidates), len(time_candidates))
+        logger.info("Extracted data | post_urls=%d | texts=%d | times=%d | images=%d", 
+                   len(post_urls), len(text_candidates), len(time_candidates), len(image_candidates))
         
         # 印出詳細資訊以便診斷
         logger.info("=== Post URLs ===")
@@ -247,6 +251,7 @@ class ThreadsFetcher:
 
             text = text_candidates[idx] if idx < len(text_candidates) else ""
             published_at = time_candidates[idx] if idx < len(time_candidates) else None
+            image_url = image_candidates[idx] if idx < len(image_candidates) else None
 
             posts.append(
                 Post(
@@ -255,6 +260,7 @@ class ThreadsFetcher:
                     text=self._clean_text(text) or "(no preview text)",
                     published_at=published_at,
                     source_name=source.name,
+                    image_url=image_url,
                 )
             )
 
@@ -339,17 +345,50 @@ class ThreadsFetcher:
                 if ts > 10**12:
                     ts = ts / 1000
                 dt = datetime.fromtimestamp(ts, tz=UTC)
-                iso = dt.isoformat().replace("+00:00", "Z")
-                if iso not in candidates:
-                    candidates.append(iso)
+                # 轉換為台北時區
+                dt_taipei = dt.astimezone(TAIPEI_TZ)
+                formatted = dt_taipei.strftime("%Y-%m-%d %H:%M:%S")
+                if formatted not in candidates:
+                    candidates.append(formatted)
             except Exception:
                 continue
 
         for match in re.findall(r'datetime="([^"]+)"', html):
-            if match not in candidates:
-                candidates.append(match)
+            # 嘗試解析 ISO 格式並轉換為台北時區
+            try:
+                dt = datetime.fromisoformat(match.replace("Z", "+00:00"))
+                dt_taipei = dt.astimezone(TAIPEI_TZ)
+                formatted = dt_taipei.strftime("%Y-%m-%d %H:%M:%S")
+                if formatted not in candidates:
+                    candidates.append(formatted)
+            except Exception:
+                if match not in candidates:
+                    candidates.append(match)
 
         return candidates
+
+    def _extract_image_candidates(self, html: str) -> List[Optional[str]]:
+        """提取貼文圖片 URL"""
+        images: List[Optional[str]] = []
+        
+        # 從 JSON 中提取 image_versions2 的圖片 URL
+        pattern = r'"image_versions2"[^}]*?"url"\s*:\s*"([^"]+)"'
+        for match in re.findall(pattern, html):
+            # 處理 JSON 轉義的反斜線
+            url = match.replace(r'\/', '/')
+            
+            # 過濾掉頭像圖片（t51.82787-19 是頭像，t51.82787-15 是貼文圖）
+            if "/t51.82787-19/" not in url and url not in images:
+                images.append(url)
+        
+        # 如果沒找到，嘗試從 img 標籤提取
+        if not images:
+            pattern = r'<img[^>]*src="(https://scontent[^"]+\.cdninstagram\.com[^"]+t51\.82787-15[^"]+)"'
+            for match in re.findall(pattern, html):
+                if match not in images:
+                    images.append(match)
+        
+        return images
 
     def _post_id_from_url(self, url: str) -> str:
         match = re.search(r'/post/([^/?#]+)', url)
@@ -371,7 +410,7 @@ class DiscordNotifier:
         self.session.headers.update({"Content-Type": "application/json"})
 
     def send_post(self, post: Post) -> None:
-        payload = {"content": self._format_message(post)}
+        payload = {"embeds": [self._format_embed(post)]}
         response = self.session.post(
             self.webhook_url,
             json=payload,
@@ -379,15 +418,30 @@ class DiscordNotifier:
         )
         response.raise_for_status()
 
-    def _format_message(self, post: Post) -> str:
-        published_text = post.published_at or "unknown"
-        return (
-            "【新貼文通知】\n"
-            f"來源：{post.source_name}\n"
-            f"時間：{published_text}\n"
-            f"摘要：{post.text}\n"
-            f"連結：{post.url}"
-        )
+    def _format_embed(self, post: Post) -> Dict[str, Any]:
+        published_text = post.published_at or "未知時間"
+        
+        # 截取文字摘要（Discord embed description 限制 4096 字元）
+        description = post.text
+        if len(description) > 300:
+            description = description[:297] + "..."
+        
+        embed = {
+            "title": f"📬 {post.source_name}",
+            "description": description,
+            "url": post.url,
+            "color": 5814783,  # 藍紫色
+            "fields": [
+                {"name": "🕒 發布時間", "value": published_text, "inline": True},
+            ],
+            "footer": {"text": "Threads Monitor Bot"},
+        }
+        
+        # 如果有圖片，加入 image 欄位
+        if post.image_url:
+            embed["image"] = {"url": post.image_url}
+        
+        return embed
 
 
 class BotRunner:

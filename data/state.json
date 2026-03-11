@@ -1,7 +1,7 @@
 {
   "make_investment_easy": {
-    "last_checked_at": "2026-03-11T08:51:40.498531Z",
-    "last_success_at": "2026-03-11T08:51:49.041249Z",
+    "last_checked_at": "2026-03-11T09:45:57.108188Z",
+    "last_success_at": "2026-03-11T09:46:09.952728Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -12,8 +12,8 @@
     ]
   },
   "stock_glee": {
-    "last_checked_at": null,
-    "last_success_at": null,
+    "last_checked_at": "2026-03-11T09:46:09.952757Z",
+    "last_success_at": "2026-03-11T09:46:20.441383Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -21,6 +21,18 @@
       "DVuXHOFkpu1",
       "DVuXleJktxJ",
       "DVuOmFrEjkS"
+    ]
+  },
+  "aoyamaa._": {
+    "last_checked_at": "2026-03-11T09:46:20.441416Z",
+    "last_success_at": "2026-03-11T09:46:31.558493Z",
+    "last_error_at": null,
+    "last_error_message": null,
+    "notified_posts": [
+      "DUItwG0kUUp",
+      "DVuwJEQkYzP",
+      "DVuwM4wkY_V",
+      "DVtSpZ8EdHw"
     ]
   }
 }
