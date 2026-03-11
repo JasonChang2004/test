@@ -3,3 +3,14 @@ __pycache__/
 .env
 .venv/
 .vscode/
+
+# Test files
+test_*.py
+threads_page.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

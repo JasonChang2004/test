@@ -12,6 +12,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 
 load_dotenv()
@@ -195,14 +196,48 @@ class ThreadsFetcher:
         return posts[:limit]
 
     def _get_profile_html(self, url: str) -> str:
-        response = self.session.get(url, timeout=REQUEST_TIMEOUT)
-        response.raise_for_status()
-        return response.text
+        """使用 Playwright 抓取 Threads 頁面（需要執行 JavaScript）"""
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page()
+                page.set_extra_http_headers(DEFAULT_HEADERS)
+                
+                logger.info("Fetching Threads profile: %s", url)
+                page.goto(url, wait_until="networkidle", timeout=30000)
+                page.wait_for_timeout(3000)  # 額外等待確保內容載入
+                
+                html = page.content()
+                browser.close()
+                
+                logger.info("Successfully fetched HTML (length: %d)", len(html))
+                return html
+        except PlaywrightTimeoutError as exc:
+            raise BotError(f"Timeout while loading Threads profile: {url}") from exc
+        except Exception as exc:
+            raise BotError(f"Failed to fetch Threads profile: {url} ({exc})") from exc
 
     def _extract_posts_from_html(self, html: str, source: Source) -> List[Post]:
         post_urls = self._extract_post_urls(html)
         text_candidates = self._extract_text_candidates(html)
         time_candidates = self._extract_time_candidates(html)
+
+        logger.info("Extracted data | post_urls=%d | texts=%d | times=%d", 
+                   len(post_urls), len(text_candidates), len(time_candidates))
+        
+        # 印出詳細資訊以便診斷
+        logger.info("=== Post URLs ===")
+        for i, url in enumerate(post_urls[:5]):
+            logger.info("  [%d] %s", i, url)
+        
+        logger.info("=== Text Candidates ===")
+        for i, text in enumerate(text_candidates[:5]):
+            preview = text[:100] if len(text) > 100 else text
+            logger.info("  [%d] %s", i, preview)
+        
+        logger.info("=== Time Candidates ===")
+        for i, time in enumerate(time_candidates[:5]):
+            logger.info("  [%d] %s", i, time)
 
         posts: List[Post] = []
         for idx, post_url in enumerate(post_urls):
@@ -227,18 +262,33 @@ class ThreadsFetcher:
         for post in posts:
             deduped[post.dedupe_key] = post
 
+        logger.info("=== Final Posts (after dedup) ===")
+        for i, post in enumerate(list(deduped.values())):
+            logger.info("Post %d:", i + 1)
+            logger.info("  ID: %s", post.post_id)
+            logger.info("  URL: %s", post.url)
+            logger.info("  Text: %s", post.text)
+            logger.info("  Published: %s", post.published_at)
+
         return list(deduped.values())
 
     def _extract_post_urls(self, html: str) -> List[str]:
+        """提取貼文 URL（支援 threads.net/com 和相對路徑）"""
         url_patterns = [
             r'https://www\.threads\.net/@[^"\s<>]+/post/[^"\s<>?]+',
-            r'/@[^"\s<>]+/post/[^"\s<>?]+',
+            r'https://www\.threads\.com/@[^"\s<>]+/post/[^"\s<>?]+',
+            r'/@[^"/\s<>]+/post/[A-Za-z0-9_-]+',  # 相對路徑
         ]
         urls: List[str] = []
 
         for pattern in url_patterns:
             for match in re.findall(pattern, html):
-                full_url = urljoin("https://www.threads.net", match)
+                # 轉換為完整 URL
+                if match.startswith('/'):
+                    full_url = urljoin("https://www.threads.net", match)
+                else:
+                    full_url = match
+                    
                 if full_url not in urls:
                     urls.append(full_url)
 
@@ -248,23 +298,35 @@ class ThreadsFetcher:
         texts: List[str] = []
         soup = BeautifulSoup(html, "html.parser")
 
+        # 跳過個人簡介相關的 meta description
+        skip_keywords = ["Followers", "Threads •", "See the latest conversations"]
+        
         for tag in soup.find_all("meta"):
             key = (tag.get("property") or "") + "|" + (tag.get("name") or "")
             content = tag.get("content") or ""
             if not content:
                 continue
             if "description" in key.lower() and len(content.strip()) > 10:
+                # 過濾掉個人簡介
+                if any(keyword in content for keyword in skip_keywords):
+                    continue
                 if content.strip() not in texts:
                     texts.append(content.strip())
 
+        # 從 JSON 資料中提取文字（這是最可靠的來源）
         for match in re.findall(r'"text"\s*:\s*"(.*?)"', html):
             try:
                 candidate = bytes(match, "utf-8").decode("unicode_escape", errors="ignore")
             except Exception:
                 candidate = match
             candidate = self._clean_text(candidate)
-            if candidate and candidate not in texts:
-                texts.append(candidate)
+            
+            # 過濾掉個人簡介和太短的文字
+            if candidate and len(candidate) > 20:
+                if any(keyword in candidate for keyword in skip_keywords):
+                    continue
+                if candidate not in texts:
+                    texts.append(candidate)
 
         return texts
 

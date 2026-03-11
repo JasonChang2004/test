@@ -1,0 +1,46 @@
+name: Threads Monitor Bot
+
+on:
+  # 每小時執行一次
+  schedule:
+    - cron: '0 * * * *'  # 每小時的第 0 分鐘
+  
+  # 也可以手動觸發
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+      
+      - name: Run monitor bot
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python app.py
+      
+      - name: Upload state file (for debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: state-data
+          path: data/state.json
+          retention-days: 7
