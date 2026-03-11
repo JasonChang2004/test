@@ -1,7 +1,7 @@
 {
   "make_investment_easy": {
-    "last_checked_at": "2026-03-11T03:19:11.221380Z",
-    "last_success_at": "2026-03-11T03:19:22.066849Z",
+    "last_checked_at": "2026-03-11T04:47:18.562774Z",
+    "last_success_at": "2026-03-11T04:47:27.239718Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -12,8 +12,8 @@
     ]
   },
   "stock_glee": {
-    "last_checked_at": "2026-03-11T03:19:22.066866Z",
-    "last_success_at": "2026-03-11T03:19:30.713350Z",
+    "last_checked_at": "2026-03-11T04:47:27.239728Z",
+    "last_success_at": "2026-03-11T04:47:34.348672Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
