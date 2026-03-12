@@ -50,16 +50,6 @@
     "thread_id": 1481470754771177632
   },
   {
-    "id": "8TBOW",
-    "platform": "facebook",
-    "name": "8TBOW",
-    "url": "https://www.facebook.com/8TBOW",
-    "enabled": true,
-    "check_interval_minutes": 60,
-    "parser_type": "facebook_public_page",
-    "thread_id": 1481524325470306467
-  },
-  {
     "id": "Unclestocknotess",
     "platform": "facebook",
     "name": "Unclestocknotess",
