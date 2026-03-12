@@ -551,6 +551,12 @@ class FacebookFetcher:
             published_at = time_candidates[idx] if idx < len(time_candidates) else None
             image_url = image_candidates[idx] if idx < len(image_candidates) else None
 
+            # 過濾掉沒有內容的獨立圖片 URL（可能是其他貼文的附圖）
+            # 如果是 photo URL 且沒有文字，跳過
+            if "/photo/" in post_url and not text.strip():
+                logger.debug("Skipping photo URL without text: %s", post_url)
+                continue
+
             posts.append(
                 Post(
                     post_id=post_id,

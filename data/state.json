@@ -44,10 +44,6 @@
       "DVtSpZ8EdHw"
     ]
   },
-  "_health_check": {
-    "last_notification_at": "2026-03-12T09:03:54.265466Z",
-    "last_health_check_at": null
-  },
   "growin_ai": {
     "last_checked_at": "2026-03-12T09:03:20.673227Z",
     "last_success_at": "2026-03-12T09:03:26.819404Z",
@@ -79,25 +75,17 @@
     "last_success_at": "2026-03-12T09:03:44.056790Z",
     "last_error_at": null,
     "last_error_message": null,
-    "notified_posts": [
-      "82e3b9d57d80",
-      "469431732582783",
-      "885502267642392"
-    ]
+    "notified_posts": []
   },
   "yutinghaosfinance": {
     "last_checked_at": "2026-03-12T09:03:44.056813Z",
     "last_success_at": "2026-03-12T09:03:54.265580Z",
     "last_error_at": null,
     "last_error_message": null,
-    "notified_posts": [
-      "615d24f85dae",
-      "978623381395682",
-      "42649b3c9c2b",
-      "978526471405373",
-      "968395a20e1c",
-      "495385506386141",
-      "978522541405766"
-    ]
+    "notified_posts": []
+  },
+  "_health_check": {
+    "last_notification_at": "2026-03-12T09:03:54.265466Z",
+    "last_health_check_at": null
   }
 }
