@@ -68,5 +68,15 @@
     "check_interval_minutes": 60,
     "parser_type": "facebook_public_page",
     "thread_id": 1481524243673120778
+  },
+  {
+    "id": "yutinghaosfinance",
+    "platform": "facebook",
+    "name": "yutinghaosfinance",
+    "url": "https://www.facebook.com/yutinghaosfinance",
+    "enabled": true,
+    "check_interval_minutes": 60,
+    "parser_type": "facebook_public_page",
+    "thread_id": 1481525203094995034
   }
 ]

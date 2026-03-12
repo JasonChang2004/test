@@ -82,19 +82,5 @@
     "last_error_at": "2026-03-12T05:18:54.950828Z",
     "last_error_message": "400 Client Error: Bad Request for url: https://discord.com/api/webhooks/1481468320069718098/FjJnRYo1Veyyhoqo7TA112xHoMRsyHXShig54m22FsH98vXpSB6NsLUzTzCgYFYS_i6l?thread_id=1481502058648698880",
     "notified_posts": []
-  },
-  "8tbow_facebook": {
-    "last_checked_at": "2026-03-12T05:21:05.182858Z",
-    "last_success_at": null,
-    "last_error_at": "2026-03-12T05:21:24.228851Z",
-    "last_error_message": "400 Client Error: Bad Request for url: https://discord.com/api/webhooks/1481468320069718098/FjJnRYo1Veyyhoqo7TA112xHoMRsyHXShig54m22FsH98vXpSB6NsLUzTzCgYFYS_i6l?thread_id=1481501987794063434",
-    "notified_posts": []
-  },
-  "unclestocknotess_facebook": {
-    "last_checked_at": "2026-03-12T05:21:24.228870Z",
-    "last_success_at": null,
-    "last_error_at": "2026-03-12T05:21:44.130170Z",
-    "last_error_message": "400 Client Error: Bad Request for url: https://discord.com/api/webhooks/1481468320069718098/FjJnRYo1Veyyhoqo7TA112xHoMRsyHXShig54m22FsH98vXpSB6NsLUzTzCgYFYS_i6l?thread_id=1481502058648698880",
-    "notified_posts": []
   }
 }
