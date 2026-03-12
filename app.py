@@ -129,6 +129,13 @@ class StateStore:
         self.state: Dict[str, Dict[str, Any]] = self.store.load(default={})
         if not isinstance(self.state, dict):
             raise BotError("state.json must be a JSON object")
+        
+        # 初始化全域健康檢查狀態
+        if "_health_check" not in self.state:
+            self.state["_health_check"] = {
+                "last_notification_at": None,
+                "last_health_check_at": None,
+            }
 
     def get_source_state(self, source_id: str) -> Dict[str, Any]:
         if source_id not in self.state:
@@ -182,6 +189,35 @@ class StateStore:
 
     def save(self) -> None:
         self.store.atomic_save(self.state)
+    
+    def update_last_notification(self, now: datetime) -> None:
+        """更新最後一次發送通知的時間"""
+        if "_health_check" not in self.state:
+            self.state["_health_check"] = {}
+        self.state["_health_check"]["last_notification_at"] = now.astimezone(UTC).isoformat().replace("+00:00", "Z")
+    
+    def should_send_health_check(self, now: datetime, interval_hours: int = 24) -> bool:
+        """檢查是否需要發送健康檢查通知（預設 24 小時）"""
+        health = self.state.get("_health_check", {})
+        last_notification = health.get("last_notification_at")
+        
+        if not last_notification:
+            return False  # 如果從未發送過通知，不需要健康檢查
+        
+        try:
+            last_dt = datetime.fromisoformat(last_notification.replace("Z", "+00:00"))
+            hours_since = (now - last_dt).total_seconds() / 3600
+            return hours_since >= interval_hours
+        except (ValueError, AttributeError):
+            return False
+    
+    def update_health_check(self, now: datetime) -> None:
+        """更新健康檢查時間"""
+        if "_health_check" not in self.state:
+            self.state["_health_check"] = {}
+        self.state["_health_check"]["last_health_check_at"] = now.astimezone(UTC).isoformat().replace("+00:00", "Z")
+        # 同時更新最後通知時間，避免重複發送
+        self.state["_health_check"]["last_notification_at"] = now.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
 class ThreadsFetcher:
@@ -424,6 +460,16 @@ class DiscordNotifier:
             timeout=REQUEST_TIMEOUT,
         )
         response.raise_for_status()
+    
+    def send_health_check(self, hours_since_last: float) -> None:
+        """發送健康檢查通知"""
+        payload = {"embeds": [self._format_health_check_embed(hours_since_last)]}
+        response = self.session.post(
+            self.webhook_url,
+            json=payload,
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
 
     def _format_embed(self, post: Post) -> Dict[str, Any]:
         published_text = post.published_at or "未知時間"
@@ -449,6 +495,21 @@ class DiscordNotifier:
             embed["image"] = {"url": post.image_url}
         
         return embed
+    
+    def _format_health_check_embed(self, hours_since_last: float) -> Dict[str, Any]:
+        """格式化健康檢查訊息"""
+        now_taipei = datetime.now(tz=TAIPEI_TZ)
+        
+        return {
+            "title": "✅ 系統健康檢查",
+            "description": f"Threads Monitor Bot 正常運作中\n\n已經 **{hours_since_last:.1f} 小時**沒有新貼文通知。",
+            "color": 5763719,  # 綠色
+            "fields": [
+                {"name": "🕒 檢查時間", "value": now_taipei.strftime("%Y-%m-%d %H:%M:%S"), "inline": True},
+                {"name": "📊 狀態", "value": "正常運作 ✓", "inline": True},
+            ],
+            "footer": {"text": "自動健康檢查 • 每 24 小時"},
+        }
 
 
 class BotRunner:
@@ -493,6 +554,7 @@ class BotRunner:
                 for post in reversed(new_posts):
                     self.notifier.send_post(post, thread_id=source.thread_id)
                     self.state_store.add_notified_post(source.id, post.dedupe_key)
+                    self.state_store.update_last_notification(datetime.now(tz=UTC))
                     notified_count += 1
                     logger.info("Notified post | source=%s | post=%s | thread=%s", 
                                source.id, post.dedupe_key, source.thread_id or "main")
@@ -504,6 +566,22 @@ class BotRunner:
                 logger.exception("Source failed | source=%s", source.id)
                 self.state_store.mark_error(source.id, datetime.now(tz=UTC), str(exc))
 
+        # 檢查是否需要發送健康檢查通知
+        now = datetime.now(tz=UTC)
+        if self.state_store.should_send_health_check(now, interval_hours=24):
+            try:
+                health = self.state_store.state.get("_health_check", {})
+                last_notification = health.get("last_notification_at")
+                if last_notification:
+                    last_dt = datetime.fromisoformat(last_notification.replace("Z", "+00:00"))
+                    hours_since = (now - last_dt).total_seconds() / 3600
+                    
+                    self.notifier.send_health_check(hours_since)
+                    self.state_store.update_health_check(now)
+                    logger.info("Sent health check notification | hours_since_last=%.1f", hours_since)
+            except Exception as exc:
+                logger.exception("Failed to send health check notification")
+        
         self.state_store.save()
 
         finished_at = datetime.now(tz=UTC)

@@ -1,10 +1,11 @@
 {
   "make_investment_easy": {
-    "last_checked_at": "2026-03-11T22:43:15.109457Z",
-    "last_success_at": "2026-03-11T22:43:24.791143Z",
+    "last_checked_at": "2026-03-12T02:02:33.954959Z",
+    "last_success_at": "2026-03-12T02:02:43.587960Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
+      "DVnXNHXAQ9S",
       "DJWdhM_hMqG",
       "DJWdhkRh9Gq",
       "DJWdiF4Bn2U",
@@ -12,11 +13,14 @@
     ]
   },
   "stock_glee": {
-    "last_checked_at": "2026-03-11T22:43:24.791156Z",
-    "last_success_at": "2026-03-11T22:43:32.479029Z",
+    "last_checked_at": "2026-03-12T02:02:43.587982Z",
+    "last_success_at": "2026-03-12T02:02:53.136788Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
+      "DVw7lIVkh_6",
+      "DVw1p8sknSo",
+      "DVwx9XzEoSh",
       "DVvqxVZkv35",
       "DVu_wWiEnIz",
       "DVuXHOFkpu1",
@@ -25,15 +29,42 @@
     ]
   },
   "aoyamaa._": {
-    "last_checked_at": "2026-03-11T22:43:32.479042Z",
-    "last_success_at": "2026-03-11T22:43:40.649824Z",
+    "last_checked_at": "2026-03-12T02:02:53.136810Z",
+    "last_success_at": "2026-03-12T02:03:01.440926Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
+      "DVsxg_hEUgc",
       "DUItwG0kUUp",
       "DVuwJEQkYzP",
       "DVuwM4wkY_V",
       "DVtSpZ8EdHw"
+    ]
+  },
+  "growin_ai": {
+    "last_checked_at": "2026-03-12T02:03:01.440948Z",
+    "last_success_at": "2026-03-12T02:03:10.587646Z",
+    "last_error_at": null,
+    "last_error_message": null,
+    "notified_posts": [
+      "DMb008EpgOn",
+      "DVukdXgCT_N",
+      "DVukgi1Cf5p",
+      "DVs3WB2Cd6D",
+      "DVpakfNCXZ8"
+    ]
+  },
+  "ai_j_2026.12": {
+    "last_checked_at": "2026-03-12T02:03:10.587665Z",
+    "last_success_at": "2026-03-12T02:03:20.570486Z",
+    "last_error_at": null,
+    "last_error_message": null,
+    "notified_posts": [
+      "DVY0vhCkQyV",
+      "DVY3tYZES1h",
+      "DVwDkT6kd8d",
+      "DVwEYgXEUZA",
+      "DVoE8MDkUCj"
     ]
   }
 }
