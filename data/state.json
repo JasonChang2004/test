@@ -1,7 +1,7 @@
 {
   "make_investment_easy": {
-    "last_checked_at": "2026-03-14T07:06:38.588944Z",
-    "last_success_at": "2026-03-14T07:06:46.128187Z",
+    "last_checked_at": "2026-03-14T08:52:47.716623Z",
+    "last_success_at": "2026-03-14T08:52:56.646802Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -15,8 +15,8 @@
     ]
   },
   "stock_glee": {
-    "last_checked_at": "2026-03-14T07:06:46.128200Z",
-    "last_success_at": "2026-03-14T07:06:53.744540Z",
+    "last_checked_at": "2026-03-14T08:52:56.646817Z",
+    "last_success_at": "2026-03-14T08:53:04.600507Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -39,11 +39,12 @@
     ]
   },
   "aoyamaa._": {
-    "last_checked_at": "2026-03-14T07:06:53.744552Z",
-    "last_success_at": "2026-03-14T07:07:00.824660Z",
+    "last_checked_at": "2026-03-14T08:53:04.600524Z",
+    "last_success_at": "2026-03-14T08:53:12.153006Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
+      "DV2yVMmkaWV",
       "DV0ul5pEc3B",
       "DVz6g9OkUgt",
       "DVxuduWET9G",
@@ -56,8 +57,8 @@
     ]
   },
   "growin_ai": {
-    "last_checked_at": "2026-03-14T07:07:00.824672Z",
-    "last_success_at": "2026-03-14T07:07:07.274547Z",
+    "last_checked_at": "2026-03-14T08:53:12.153016Z",
+    "last_success_at": "2026-03-14T08:53:18.214506Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -71,8 +72,8 @@
     ]
   },
   "ai_j_2026.12": {
-    "last_checked_at": "2026-03-14T07:07:07.274556Z",
-    "last_success_at": "2026-03-14T07:07:14.146682Z",
+    "last_checked_at": "2026-03-14T08:53:18.214520Z",
+    "last_success_at": "2026-03-14T08:53:24.697717Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -86,8 +87,8 @@
     ]
   },
   "Unclestocknotess": {
-    "last_checked_at": "2026-03-14T07:07:14.146715Z",
-    "last_success_at": "2026-03-14T07:07:24.295475Z",
+    "last_checked_at": "2026-03-14T08:53:24.697734Z",
+    "last_success_at": "2026-03-14T08:53:34.482112Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -106,8 +107,8 @@
     ]
   },
   "yutinghaosfinance": {
-    "last_checked_at": "2026-03-14T07:07:24.295489Z",
-    "last_success_at": "2026-03-14T07:07:35.647855Z",
+    "last_checked_at": "2026-03-14T08:53:34.482139Z",
+    "last_success_at": "2026-03-14T08:53:44.202547Z",
     "last_error_at": null,
     "last_error_message": null,
     "notified_posts": [
@@ -119,7 +120,7 @@
     ]
   },
   "_health_check": {
-    "last_notification_at": "2026-03-14T06:01:44.263966Z",
+    "last_notification_at": "2026-03-14T08:53:12.152896Z",
     "last_health_check_at": null
   }
 }
